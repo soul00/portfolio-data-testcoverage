@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+.next/
+out/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Test artifacts
+allure-results/
+allure-report/
+playwright-report/
+test-results/
+
+# Data (dataset snapshots live in S3, not git)
+data/
+
+# OS / editor
+.DS_Store
+Thumbs.db
