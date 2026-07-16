@@ -10,7 +10,7 @@ wrong, instead of a model that silently got worse.
 This is a portfolio project. The main goal is to show how I approach test
 automation, so the test setup is more thorough than a project of this size would
 normally need: unit tests for the validation logic, API and contract tests,
-browser tests for the dashboard, load tests, all wired into CI.
+load tests, all wired into CI.
 
 Demo dataset is [IMDB movie reviews](https://huggingface.co/datasets/stanfordnlp/imdb)
 from Hugging Face — 50k reviews labeled positive/negative. It contains real
@@ -30,9 +30,9 @@ duplicates, so the duplicate check has something to catch.
 Early stage, building this in the evenings. Rough plan:
 
 - [x] validation engine + unit tests
-- [ ] API, Postgres, dataset ingestion
+- [x] API, Postgres, dataset ingestion
 - [ ] API and contract tests running in CI
-- [ ] dashboard + browser tests
+- [ ] results visualized on my portfolio site
 - [ ] deployment, smoke tests, nightly runs
 - [ ] load tests
 
