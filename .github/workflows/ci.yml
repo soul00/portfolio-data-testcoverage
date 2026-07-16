@@ -41,4 +41,4 @@ jobs:
       - name: Format check
         run: ruff format --check .
       - name: Unit tests
-        run: pytest -q
+        run: pytest -v
