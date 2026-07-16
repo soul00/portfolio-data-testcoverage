@@ -3,10 +3,10 @@ name = "quality-gate"
 version = "0.1.0"
 description = "Validation engine and API for the ML dataset quality gate"
 requires-python = ">=3.12"
-dependencies = ["pandas>=2.2"]
+dependencies = ["pandas>=2.2", "fastapi>=0.115", "uvicorn>=0.30"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["pytest>=8", "ruff>=0.6", "httpx>=0.27"]
 
 [build-system]
 requires = ["setuptools>=68"]
