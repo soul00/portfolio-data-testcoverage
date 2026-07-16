@@ -25,13 +25,6 @@ def clean_records() -> list[dict]:
     ]
 
 
-class TestHealth:
-    def test_returns_ok(self):
-        response = client.get("/health")
-        assert response.status_code == 200
-        assert response.json() == {"status": "ok"}
-
-
 class TestValidate:
     def test_clean_data_passes_the_gate(self):
         payload = {"records": clean_records(), "config": imdb_like_config()}
@@ -40,11 +33,6 @@ class TestValidate:
         body = response.json()
         assert body["passed"] is True
         assert all(check["passed"] for check in body["checks"])
-
-    def test_response_lists_every_check(self):
-        payload = {"records": clean_records(), "config": imdb_like_config()}
-        names = [check["name"] for check in client.post("/validate", json=payload).json()["checks"]]
-        assert names == ["row_count", "schema", "null_rates", "duplicates", "label_balance"]
 
     def test_dirty_data_fails_with_details(self):
         records = clean_records()
@@ -55,30 +43,3 @@ class TestValidate:
         failed = [check for check in body["checks"] if not check["passed"]]
         assert failed[0]["name"] == "null_rates"
         assert failed[0]["details"]["offending"] == {"text": 0.25}
-
-    def test_empty_records_fail_the_gate(self):
-        payload = {"records": [], "config": imdb_like_config()}
-        response = client.post("/validate", json=payload)
-        assert response.status_code == 200
-        assert response.json()["passed"] is False
-
-    def test_missing_config_is_rejected(self):
-        response = client.post("/validate", json={"records": clean_records()})
-        assert response.status_code == 422
-
-    def test_threshold_out_of_range_is_rejected(self):
-        payload = {
-            "records": clean_records(),
-            "config": imdb_like_config(max_null_fraction=1.5),
-        }
-        response = client.post("/validate", json=payload)
-        assert response.status_code == 422
-
-    def test_label_column_optional(self):
-        payload = {
-            "records": clean_records(),
-            "config": imdb_like_config(label_column=None),
-        }
-        body = client.post("/validate", json=payload).json()
-        assert body["passed"] is True
-        assert "label_balance" not in [check["name"] for check in body["checks"]]

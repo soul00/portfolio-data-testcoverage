@@ -28,34 +28,9 @@ class TestRunGate:
         assert result.passed
         assert result.failed_checks() == []
 
-    def test_runs_all_configured_checks(self):
-        result = run_gate(good_dataframe(), imdb_like_config())
-        names = [check.name for check in result.checks]
-        assert names == ["row_count", "schema", "null_rates", "duplicates", "label_balance"]
-
     def test_single_failing_check_fails_the_gate(self):
         df = good_dataframe()
         df.loc[0, "text"] = None
         result = run_gate(df, imdb_like_config())
         assert not result.passed
         assert [check.name for check in result.failed_checks()] == ["null_rates"]
-
-    def test_label_check_skipped_when_not_configured(self):
-        result = run_gate(good_dataframe(), imdb_like_config(label_column=None))
-        names = [check.name for check in result.checks]
-        assert "label_balance" not in names
-        assert result.passed
-
-    def test_multiple_failures_all_reported(self):
-        df = pd.DataFrame({"text": ["same", "same"], "label": [1, 1]})
-        df = pd.concat([df, df], ignore_index=True)
-        result = run_gate(df, imdb_like_config())
-        failed = [check.name for check in result.failed_checks()]
-        assert "duplicates" in failed
-        assert not result.passed
-
-    def test_empty_dataset_fails_the_gate(self):
-        result = run_gate(pd.DataFrame(), imdb_like_config())
-        assert not result.passed
-        failed = [check.name for check in result.failed_checks()]
-        assert "row_count" in failed

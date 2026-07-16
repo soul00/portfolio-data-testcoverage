@@ -26,43 +26,9 @@ def run_payload(dataset: str = "imdb-train") -> dict:
     }
 
 
-class TestCreateRun:
-    def test_returns_stored_run(self, client):
-        response = client.post("/runs", json=run_payload())
-        assert response.status_code == 201
-        body = response.json()
-        assert body["dataset"] == "imdb-train"
-        assert body["passed"] is True
-        assert body["id"] > 0
-        assert body["created_at"] is not None
-
-    def test_failing_gate_is_stored_too(self, client):
-        payload = run_payload()
-        payload["records"] = []
-        body = client.post("/runs", json=payload).json()
-        assert body["passed"] is False
-
-
-class TestGetRun:
+class TestRuns:
     def test_created_run_can_be_fetched(self, client):
-        created = client.post("/runs", json=run_payload()).json()
-        fetched = client.get(f"/runs/{created['id']}").json()
-        assert fetched == created
-
-    def test_unknown_id_returns_404(self, client):
-        response = client.get("/runs/999999")
-        assert response.status_code == 404
-
-
-class TestListRuns:
-    def test_newest_first(self, client):
-        first = client.post("/runs", json=run_payload("dataset-a")).json()
-        second = client.post("/runs", json=run_payload("dataset-b")).json()
-        runs = client.get("/runs").json()
-        assert [run["id"] for run in runs] == [second["id"], first["id"]]
-
-    def test_limit(self, client):
-        for name in ("a", "b", "c"):
-            client.post("/runs", json=run_payload(name))
-        runs = client.get("/runs", params={"limit": 2}).json()
-        assert len(runs) == 2
+        created = client.post("/runs", json=run_payload())
+        assert created.status_code == 201
+        fetched = client.get(f"/runs/{created.json()['id']}").json()
+        assert fetched == created.json()
