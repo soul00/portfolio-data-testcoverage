@@ -8,6 +8,22 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: gate
+          POSTGRES_PASSWORD: gate
+          POSTGRES_DB: gate
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U gate"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 15
+    env:
+      DATABASE_URL: postgresql+psycopg://gate:gate@localhost:5432/gate
     defaults:
       run:
         working-directory: backend
