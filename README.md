@@ -1,5 +1,7 @@
 # portfolio-data-testcoverage
 
+[![ci](https://github.com/soul00/portfolio-data-testcoverage/actions/workflows/ci.yml/badge.svg)](https://github.com/soul00/portfolio-data-testcoverage/actions/workflows/ci.yml)
+
 Quality gate for ML training data. New versions of a dataset get checked (schema,
 null rates, duplicates, label balance, drift against a baseline) before they are
 allowed into model training. If the gate fails you get a report of what exactly is
@@ -27,7 +29,7 @@ duplicates, so the duplicate check has something to catch.
 
 Early stage, building this in the evenings. Rough plan:
 
-- [ ] validation engine + unit tests
+- [x] validation engine + unit tests
 - [ ] API, Postgres, dataset ingestion
 - [ ] API and contract tests running in CI
 - [ ] dashboard + browser tests
