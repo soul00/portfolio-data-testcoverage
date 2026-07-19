@@ -7,6 +7,7 @@ on:
 
 jobs:
   backend:
+    name: Passing run
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -44,12 +45,28 @@ jobs:
         run: pytest -v
 
   # Proof that the dataset tests catch real problems: this job downloads the
-  # dataset, corrupts it on purpose and runs the gate against it. It is
+  # dataset, corrupts it on purpose and runs the full suite against it. It is
   # expected to fail — continue-on-error keeps the workflow itself green.
   data-quality:
-    name: data quality (corrupted dataset)
+    name: Failing run
     runs-on: ubuntu-latest
     continue-on-error: true
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: gate
+          POSTGRES_PASSWORD: gate
+          POSTGRES_DB: gate
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U gate"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 15
+    env:
+      DATABASE_URL: postgresql+psycopg://gate:gate@localhost:5432/gate
     defaults:
       run:
         working-directory: backend
@@ -66,5 +83,5 @@ jobs:
         run: python -m quality_gate.ingest
       - name: Corrupt dataset
         run: python -m quality_gate.corrupt
-      - name: Dataset tests
-        run: pytest tests/test_dataset.py -v
+      - name: Unit tests
+        run: pytest -v
