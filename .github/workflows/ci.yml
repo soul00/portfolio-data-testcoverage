@@ -42,3 +42,29 @@ jobs:
         run: ruff format --check .
       - name: Unit tests
         run: pytest -v
+
+  # Proof that the dataset tests catch real problems: this job downloads the
+  # dataset, corrupts it on purpose and runs the gate against it. It is
+  # expected to fail — continue-on-error keeps the workflow itself green.
+  data-quality:
+    name: data quality (corrupted dataset)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - name: Install
+        run: pip install -e .[dev]
+      - name: Ingest dataset
+        run: python -m quality_gate.ingest
+      - name: Corrupt dataset
+        run: python -m quality_gate.corrupt
+      - name: Dataset tests
+        run: pytest tests/test_dataset.py -v
