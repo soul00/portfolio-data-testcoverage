@@ -41,6 +41,8 @@ jobs:
         run: ruff check .
       - name: Format check
         run: ruff format --check .
+      - name: Ingest dataset
+        run: python -m quality_gate.ingest
       - name: Unit tests
         run: pytest -v
 
